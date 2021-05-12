@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity() {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
                             vibration()
-                            beep()
                             transmit_data.put("f",1)
                             CoroutineScope(IO).launch {
                             client_write(connect, transmit_data.toString()+"\n")
@@ -116,7 +115,6 @@ class MainActivity : AppCompatActivity() {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
                             vibration()
-                            beep()
                             transmit_data.put("b",1)
                             CoroutineScope(IO).launch {
                             client_write(connect, transmit_data.toString()+"\n")
@@ -145,7 +143,6 @@ class MainActivity : AppCompatActivity() {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
                             vibration()
-                            beep()
                             transmit_data.put("r",1)
                             CoroutineScope(IO).launch {
                             client_write(connect, transmit_data.toString()+"\n")
@@ -174,7 +171,6 @@ class MainActivity : AppCompatActivity() {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
                             vibration()
-                            beep()
                             transmit_data.put("l",1)
                             CoroutineScope(IO).launch {
                             client_write(connect, transmit_data.toString()+"\n")
@@ -203,7 +199,6 @@ class MainActivity : AppCompatActivity() {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
                             vibration()
-                            beep()
                             transmit_data.put("e",1)
                             CoroutineScope(IO).launch {
                             client_write(connect, transmit_data.toString()+"\n")
@@ -233,10 +228,7 @@ class MainActivity : AppCompatActivity() {
             vibrator.vibrate(100)
         }
     }
-    private fun beep(){
-         val mp = MediaPlayer.create(this,R.raw.beep)
-        mp.start()
-    }
+
 
 
 
