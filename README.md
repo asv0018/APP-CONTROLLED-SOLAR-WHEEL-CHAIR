@@ -1,0 +1,2 @@
+# APP-CONTROLLED-SOLAR-WHEEL-CHAIR
+This project is developed using Android Studio in kotlin language. The esp8266 which is the hardware which is used in the project. The software used is Arduino IDE. This project help physically disabled persons to navigate by controlling the wheel chair through the android app. It also has the option to call for emergency when the emergency button is pressed in the app.
