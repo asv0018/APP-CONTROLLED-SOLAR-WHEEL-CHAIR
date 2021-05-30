@@ -14,7 +14,8 @@
 # define MOTOR_IN2_B 15 // D8
 
 # define EMERGENCY_SIG_PIN 5 // D1
-// Credentials
+
+// CREDENTIALS
 const char* ssid = "ASV DEN";
 const char* password = "87554321";
 
@@ -51,25 +52,23 @@ void setup(){
 StaticJsonDocument<200> doc;
 
 void loop() {
-  /*
-   digitalWrite(GPIO_SR04_TRIG, LOW);
-   delayMicroseconds(2);
-   // Sets the TRIGGER pin on HIGH state for 10 micro seconds
-   digitalWrite(GPIO_SR04_TRIG, HIGH);
-   delayMicroseconds(10);
-   digitalWrite(GPIO_SR04_TRIG, LOW);
-   // Reads the ECHOPIN, returns the sound wave travel time in microseconds
-   float duration = pulseIn(GPIO_SR04_ECHO, HIGH);
-   // Calculating the distance
-   int distance= duration*0.034/2;
-   Serial.println(distance);
-   delay(1000);
-   */
-  /*
+  bool forward_movement = false;
   WiFiClient client = server.available();
   if(client){
     Serial.println("Client connected...");
     while(client.connected()){
+      digitalWrite(GPIO_SR04_TRIG, LOW);
+      delayMicroseconds(2);
+      // Sets the TRIGGER pin on HIGH state for 10 micro seconds
+      digitalWrite(GPIO_SR04_TRIG, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(GPIO_SR04_TRIG, LOW);
+      // Reads the ECHOPIN, returns the sound wave travel time in microseconds
+      float duration = pulseIn(GPIO_SR04_ECHO, HIGH);
+      // Calculating the distance
+      int distance= duration*0.034/2;
+      //Serial.println(distance);
+      
       char datas[40]={0};int i = 0;
         if(client.available()>0){
           Serial.println("@");
@@ -83,22 +82,59 @@ void loop() {
             }
           }
           String json_data = String(datas);
-          Serial.println(json_data);
           DeserializationError error = deserializeJson(doc, json_data);
-
+          
           // Test if parsing succeeds.
           if (error) {
             Serial.print(F("deserializeJson() failed: "));
             Serial.println(error.f_str());
             return;
           }
-                    
+
+          if(doc["f"]){
+            Serial.println("MOVING FORWARD");
+            if(distance <= 18){
+              Serial.println("OBSTACLE FOUND, HENCE STOPPING.");
+              STAY_IN_POSITION();
+            }else{
+              forward_movement = true;
+              MOVE_FORWARD();
+            }
+            
+          }else if(doc["b"]){
+            Serial.println("MOVING BACKWARD");
+            MOVE_BACKWARD();
+          }else if(doc["l"]){
+            Serial.println("MOVING LEFT");
+            TURN_LEFT();
+          }else if(doc["r"]){
+            Serial.println("MOVING RIGHT");
+            TURN_RIGHT();
+          }else{
+            Serial.println("STAYING IN POSITION");
+            STAY_IN_POSITION();
+            forward_movement = false;
+          }
+          
+          if(doc["e"]){
+            Serial.println("TRIGGERING EMERGENCY CALL");
+            TRIGGER_EMERGENCY_SIGNAL();
+          }
+          
         }
+
+        if(distance <= 18){
+            if(forward_movement){
+              Serial.print("OBSTACLE FOUND IN FRONT, HENCE STOPPED, UNTIL ITS CLEARENCE");
+              STAY_IN_POSITION();  
+            }
+          }
     }
-    Serial.println("Client disconnected:<");
+    Serial.println("Client disconnected :<, MOVEMENT STOPPED");
+    STAY_IN_POSITION();
+    forward_movement = false;
     client.stop();
   }
-  */
 }
 
 void MOVE_FORWARD(){
@@ -106,7 +142,6 @@ void MOVE_FORWARD(){
   digitalWrite(MOTOR_IN1_B, HIGH);
   digitalWrite(MOTOR_IN2_A, LOW);
   digitalWrite(MOTOR_IN2_B, HIGH);
-  
 }
 
 void MOVE_BACKWARD(){
@@ -114,7 +149,6 @@ void MOVE_BACKWARD(){
   digitalWrite(MOTOR_IN1_B, LOW);
   digitalWrite(MOTOR_IN2_A, HIGH);
   digitalWrite(MOTOR_IN2_B, LOW);
-  
 }
 
 void TURN_LEFT(){
